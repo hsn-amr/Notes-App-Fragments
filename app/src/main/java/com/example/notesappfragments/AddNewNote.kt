@@ -1,14 +1,19 @@
 package com.example.notesappfragments
 
+import android.app.Activity
+import android.content.Context
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.core.widget.addTextChangedListener
 import androidx.navigation.Navigation
 import kotlinx.coroutines.CoroutineScope
@@ -64,6 +69,7 @@ class AddNewNote : Fragment() {
                 CoroutineScope(Dispatchers.IO).launch {
                     noteDatabase.getNoteDao().addNote(Note(0,text))
                     withContext(Dispatchers.Main){
+                        closeKeyboard()
                         Navigation.findNavController(view).navigate(R.id.action_addNewNote_to_home2)
                     }
                 }
@@ -72,6 +78,16 @@ class AddNewNote : Fragment() {
             }
         }
         return view
+    }
+
+    //https://stackoverflow.com/questions/55505049/how-to-close-the-soft-keyboard-from-a-fragment-using-kotlin
+    // how to close Keyboard within fragment
+    fun closeKeyboard() {
+        val view = activity?.currentFocus
+        if (view != null) {
+            val imm = activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.hideSoftInputFromWindow(view!!.windowToken, 0)
+        }
     }
 
     companion object {
